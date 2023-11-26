@@ -1,0 +1,42 @@
+version: '3'
+services:
+  fullstack-mysql:
+    platform: linux/x86_64
+    image: mysql:8.0.28
+    container_name: bengkelgin_mysql
+    ports: 
+      - ${DB_PORT}:3306
+    environment: 
+      - MYSQL_ROOT_HOST=${DB_HOST} 
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - database_mysql:/var/lib/mysql
+    networks:
+      - bengkelgin_network
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: bengkelgin_phpmyadmin
+    depends_on:
+      - fullstack-mysql
+    environment:
+      - PMA_HOST=fullstack-mysql # Note the "mysql". Must be the name of the what you used as the mysql service.
+      - PMA_USER=${DB_USER}
+      - PMA_PORT=${DB_PORT}
+      - PMA_PASSWORD=${DB_PASSWORD}
+    ports:
+      - ${DOC_PHPMYADMIN_PORT}:80
+    restart: always
+    networks:
+      - bengkelgin_network
+
+volumes:
+  database_mysql:                   # Uncomment this when using mysql.
+
+# Networks to be created to facilitate communication between containers
+networks:
+  bengkelgin_network:
+    driver: bridge
