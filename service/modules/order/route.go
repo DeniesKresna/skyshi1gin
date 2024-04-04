@@ -7,6 +7,7 @@ import (
 	"github.com/DeniesKresna/skyshi1gin/service/modules/order/repository"
 	"github.com/DeniesKresna/skyshi1gin/service/modules/order/usecase"
 	productCrossHandler "github.com/DeniesKresna/skyshi1gin/service/modules/product/handler/cross"
+	userCrossHandler "github.com/DeniesKresna/skyshi1gin/service/modules/user/handler/cross"
 	userUsecase "github.com/DeniesKresna/skyshi1gin/service/modules/user/usecase"
 	warehouseCrossHandler "github.com/DeniesKresna/skyshi1gin/service/modules/warehouse/handler/cross"
 	"github.com/DeniesKresna/skyshi1gin/types/constants"
@@ -17,8 +18,9 @@ func InitRoutes(v1 *gin.RouterGroup, userCase userUsecase.IUsecase, cfg *config.
 	// set up cross module for warehouse
 	warehouseCross := warehouseCrossHandler.WarehouseCreateCross(cfg)
 	productCross := productCrossHandler.ProductCreateCross(cfg)
+	userCross := userCrossHandler.UserCreateCross(cfg)
 
-	repo := repository.OrderCreateRepository(cfg.DB, warehouseCross, productCross)
+	repo := repository.OrderCreateRepository(cfg.DB, warehouseCross, productCross, userCross)
 	ucase := usecase.OrderCreateUsecase(repo)
 	handler := handler.OrderCreateHandler(ucase)
 

@@ -95,3 +95,48 @@ func (h WarehouseHandler) WarehouseProductTransfer(ctx *gin.Context) {
 	}
 	ResponseJson(ctx, warehouseProduct)
 }
+
+func (h WarehouseHandler) WarehouseGetAllProductList(ctx *gin.Context) {
+	var (
+		terr terror.ErrInterface
+	)
+
+	warehouseProduct, terr := h.warehouseUsecase.WarehouseGetAllProductList(ctx)
+	if terr != nil {
+		ResponseJson(ctx, terr)
+		return
+	}
+	ResponseJson(ctx, warehouseProduct)
+}
+
+func (h WarehouseHandler) WarehouseUpdateActive(ctx *gin.Context) {
+	var (
+		terr terror.ErrInterface
+		id   int64
+	)
+
+	id = utint.Convert64FromString(ctx.Param("id"), 0)
+
+	warehouseProduct, terr := h.warehouseUsecase.WarehouseUpdateActive(ctx, id)
+	if terr != nil {
+		ResponseJson(ctx, terr)
+		return
+	}
+	ResponseJson(ctx, warehouseProduct)
+}
+
+func (h WarehouseHandler) WarehouseUpdateInactive(ctx *gin.Context) {
+	var (
+		terr terror.ErrInterface
+		id   int64
+	)
+
+	id = utint.Convert64FromString(ctx.Param("id"), 0)
+
+	warehouseProduct, terr := h.warehouseUsecase.WarehouseUpdateInactive(ctx, id)
+	if terr != nil {
+		ResponseJson(ctx, terr)
+		return
+	}
+	ResponseJson(ctx, warehouseProduct)
+}

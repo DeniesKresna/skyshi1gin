@@ -25,4 +25,8 @@ type IUsecase interface {
 	WarehouseProductUpdateStock(ctx *gin.Context, req []models.WarehouseProductStockRequest) (warehouseProducts []models.WarehouseProduct, terr terror.ErrInterface)
 	WarehouseProductTransfer(ctx *gin.Context, req models.WarehouseTransferRequest) (warehouseProducts []models.WarehouseProduct, terr terror.ErrInterface)
 	WarehouseProductTotal(ctx *gin.Context, productID int64) (total int64, terr terror.ErrInterface)
+	WarehouseProductLock(ctx *gin.Context, req models.WarehouseProduct) (warehouseProduct models.WarehouseProduct, terr terror.ErrInterface)
+	WarehouseGetAllProductList(ctx *gin.Context) (warehouseProducts []models.AllWarehouseProduct, terr terror.ErrInterface)
+	WarehouseUpdateInactive(ctx *gin.Context, warehouseID int64) (warehouse models.Warehouse, terr terror.ErrInterface)
+	WarehouseUpdateActive(ctx *gin.Context, warehouseID int64) (warehouse models.Warehouse, terr terror.ErrInterface)
 }

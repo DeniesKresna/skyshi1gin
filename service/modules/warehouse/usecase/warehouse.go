@@ -177,3 +177,74 @@ func (u WarehouseUsecase) WarehouseProductTotal(ctx *gin.Context, productID int6
 func (u WarehouseUsecase) WarehouseProductLock(ctx *gin.Context, req models.WarehouseProduct) (warehouseProduct models.WarehouseProduct, terr terror.ErrInterface) {
 	return u.warehouseRepo.WarehouseProductLock(ctx, req)
 }
+
+func (u WarehouseUsecase) WarehouseGetAllProductList(ctx *gin.Context) (warehouseProducts []models.AllWarehouseProduct, terr terror.ErrInterface) {
+	products, terr := u.warehouseRepo.ProductList(ctx)
+	if terr != nil {
+		return
+	}
+	var productsObj = make(map[int64]models.Product)
+	for _, v := range products {
+		productsObj[int64(v.ID)] = v
+	}
+
+	allWarehouseItems, terr := u.warehouseRepo.WarehouseGetProductList(ctx)
+	if terr != nil {
+		return
+	}
+
+	var productAmount = make(map[int64]int64)
+	for _, v := range allWarehouseItems {
+		productAmount[v.ProductID] = v.Amount
+	}
+
+	for _, v := range products {
+		amount, ok := productAmount[int64(v.ID)]
+		if !ok {
+			amount = 0
+		}
+		wp := models.AllWarehouseProduct{
+			Product: productsObj[int64(v.ID)],
+			Amount:  amount,
+		}
+		warehouseProducts = append(warehouseProducts, wp)
+	}
+
+	return
+}
+
+func (u WarehouseUsecase) WarehouseUpdateActive(ctx *gin.Context, warehouseID int64) (warehouse models.Warehouse, terr terror.ErrInterface) {
+	_, terr = u.warehouseRepo.WarehouseGetByID(ctx, warehouseID)
+	if terr != nil {
+		return
+	}
+
+	terr = u.warehouseRepo.WarehouseUpdateActive(ctx, true, warehouseID)
+	if terr != nil {
+		return
+	}
+
+	warehouse, terr = u.warehouseRepo.WarehouseGetByID(ctx, warehouseID)
+	if terr != nil {
+		return
+	}
+	return
+}
+
+func (u WarehouseUsecase) WarehouseUpdateInactive(ctx *gin.Context, warehouseID int64) (warehouse models.Warehouse, terr terror.ErrInterface) {
+	_, terr = u.warehouseRepo.WarehouseGetByID(ctx, warehouseID)
+	if terr != nil {
+		return
+	}
+
+	terr = u.warehouseRepo.WarehouseUpdateActive(ctx, false, warehouseID)
+	if terr != nil {
+		return
+	}
+
+	warehouse, terr = u.warehouseRepo.WarehouseGetByID(ctx, warehouseID)
+	if terr != nil {
+		return
+	}
+	return
+}

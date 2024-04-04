@@ -13,6 +13,11 @@ type WarehouseProduct struct {
 	Amount      int64 `json:"amount"`
 }
 
+type AllWarehouseProduct struct {
+	Product Product `json:"product"`
+	Amount  int64   `json:"amount"`
+}
+
 func (wp *WarehouseProduct) TableName() string {
 	return "warehouse_product"
 }

@@ -27,11 +27,14 @@ func InitRoutes(v1 *gin.RouterGroup, userCase userUsecase.IUsecase, cfg *config.
 		adminRoute.POST("/create", handler.WarehouseCreate)
 		adminRoute.POST("/product/update-stock", handler.WarehouseProductUpdateStock)
 		adminRoute.POST("/product/transfer-stock", handler.WarehouseProductTransfer)
+		adminRoute.PUT("/activate/:id", handler.WarehouseUpdateActive)
+		adminRoute.PUT("/inactivate/:id", handler.WarehouseUpdateInactive)
 	}
 
 	authRoute := moduleRoute.Use(roleCheck(userCase, constants.ROLES_ADMIN, constants.ROLES_USER))
 	{
 		authRoute.GET("/list", handler.WarehouseList)
+		authRoute.GET("/product/list", handler.WarehouseGetAllProductList)
 		authRoute.GET("/detail/:id", handler.WarehouseGetByID)
 	}
 }

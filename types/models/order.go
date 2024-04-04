@@ -3,8 +3,8 @@ package models
 import "time"
 
 type Item struct {
-	ProductID int64 `json:"product_id" binding:"required"`
-	Amount    int64 `json:"amount" binding:"required"`
+	ProductID int64 `json:"product_id" db:"product_id" binding:"required"`
+	Amount    int64 `json:"amount" db:"amount" binding:"required"`
 }
 
 type Order struct {
@@ -16,6 +16,7 @@ type Order struct {
 
 type Payment struct {
 	DbStandard
+	UserID     int64     `json:"user_id"`
 	Price      int64     `json:"price" binding:"required"`
 	Code       string    `json:"code" binding:"required"`
 	PaidOff    int8      `json:"paid_off" binding:"required"`

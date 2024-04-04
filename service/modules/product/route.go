@@ -25,7 +25,7 @@ func InitRoutes(v1 *gin.RouterGroup, userCase userUsecase.IUsecase, cfg *config.
 
 	authRoute := moduleRoute.Use(roleCheck(userCase, constants.ROLES_ADMIN, constants.ROLES_USER))
 	{
-		authRoute.GET("/list", handler.ProductList)
+		authRoute.GET("/list-without-amount", handler.ProductList)
 		authRoute.GET("/detail/:id", handler.ProductGetByID)
 	}
 }

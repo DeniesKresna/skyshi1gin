@@ -58,3 +58,21 @@ Authorization: Bearer {{token}}
     "product_id": 1,
     "amount": 3
 }
+
+###
+# @name warehouseProductList
+GET {{host}}/warehouse/product/list HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# @name warehouseActivate
+PUT {{host}}/warehouse/activate/1 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# @name warehouseProductList
+PUT {{host}}/warehouse/inactivate/1 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}

@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/DeniesKresna/skyshi1gin/service/extensions/terror"
 	productCross "github.com/DeniesKresna/skyshi1gin/service/modules/product/handler/cross"
+	userCross "github.com/DeniesKresna/skyshi1gin/service/modules/user/handler/cross"
 	warehouseCross "github.com/DeniesKresna/skyshi1gin/service/modules/warehouse/handler/cross"
 	"github.com/DeniesKresna/skyshi1gin/types/models"
 	"github.com/gin-gonic/gin"
@@ -13,13 +14,15 @@ type OrderRepository struct {
 	db             *gorm.DB
 	warehouseCross warehouseCross.WarehouseCross
 	productCross   productCross.ProductCross
+	userCross      userCross.UserCross
 }
 
-func OrderCreateRepository(db *gorm.DB, warehouseCross warehouseCross.WarehouseCross, productCross productCross.ProductCross) IRepository {
+func OrderCreateRepository(db *gorm.DB, warehouseCross warehouseCross.WarehouseCross, productCross productCross.ProductCross, userCross userCross.UserCross) IRepository {
 	orderRepository := OrderRepository{
 		db:             db,
 		warehouseCross: warehouseCross,
 		productCross:   productCross,
+		userCross:      userCross,
 	}
 	return &orderRepository
 }
@@ -39,4 +42,7 @@ type IRepository interface {
 
 	// product cross
 	ProductGetByID(ctx *gin.Context, id int64) (product models.Product, terr terror.ErrInterface)
+
+	// user cross
+	AuthGetFromContext(ctx *gin.Context) (userRole models.UserRole, terr terror.ErrInterface)
 }

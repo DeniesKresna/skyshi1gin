@@ -8,6 +8,7 @@ import (
 	userrepo "github.com/DeniesKresna/skyshi1gin/service/modules/user/repository"
 	usercase "github.com/DeniesKresna/skyshi1gin/service/modules/user/usecase"
 
+	orderModule "github.com/DeniesKresna/skyshi1gin/service/modules/order"
 	productModule "github.com/DeniesKresna/skyshi1gin/service/modules/product"
 	warehouseModule "github.com/DeniesKresna/skyshi1gin/service/modules/warehouse"
 	"github.com/gin-contrib/cors"
@@ -37,6 +38,7 @@ func setRoutes(cfg *config.Config) (r *gin.Engine, err error) {
 		userModule.InitRoutes(v1, userCase, cfg)
 		productModule.InitRoutes(v1, userCase, cfg)
 		warehouseModule.InitRoutes(v1, userCase, cfg)
+		orderModule.InitRoutes(v1, userCase, cfg)
 	}
 
 	return

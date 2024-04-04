@@ -30,7 +30,10 @@ type IRepository interface {
 	WarehouseProductUpdateStock(ctx *gin.Context, req models.WarehouseProductStockRequest) (warehouseProduct models.WarehouseProduct, terr terror.ErrInterface)
 	WarehouseProductLock(ctx *gin.Context, req models.WarehouseProduct) (warehouseProduct models.WarehouseProduct, terr terror.ErrInterface)
 	WarehouseProductTotal(ctx *gin.Context, productID int64) (total int64, terr terror.ErrInterface)
+	WarehouseGetProductList(ctx *gin.Context) (productList []models.Item, terr terror.ErrInterface)
+	WarehouseUpdateActive(ctx *gin.Context, active bool, warehouseID int64) (terr terror.ErrInterface)
 
 	// product cross module
 	ProductGetByID(ctx *gin.Context, id int64) (product models.Product, terr terror.ErrInterface)
+	ProductList(ctx *gin.Context) (product []models.Product, terr terror.ErrInterface)
 }

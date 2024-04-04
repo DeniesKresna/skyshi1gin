@@ -21,6 +21,10 @@ func ProductCreateCross(cfg *config.Config) ProductCross {
 	}
 }
 
+func (h ProductCross) ProductList(ctx *gin.Context) (res []models.Product, terr terror.ErrInterface) {
+	return h.productUsecase.ProductList(ctx)
+}
+
 func (h ProductCross) ProductGetByID(ctx *gin.Context, id int64) (res models.Product, terr terror.ErrInterface) {
 	return h.productUsecase.ProductGetByID(ctx, id)
 }

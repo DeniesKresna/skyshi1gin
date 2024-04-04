@@ -54,7 +54,7 @@ func (u OrderUsecase) OrderItem(ctx *gin.Context, req []models.Item) (paymentOrd
 
 	// create Payments
 	code := utstring.RandomString(20)
-	for true {
+	for {
 		_, terr = u.orderRepo.PaymentGetByCode(ctx, code)
 		if terr == nil {
 			code = utstring.RandomString(20)
@@ -65,12 +65,19 @@ func (u OrderUsecase) OrderItem(ctx *gin.Context, req []models.Item) (paymentOrd
 			}
 		}
 		terr = nil
+		break
+	}
+
+	operator, terr := u.orderRepo.AuthGetFromContext(ctx)
+	if terr != nil {
+		return
 	}
 
 	paymentReq := models.Payment{
 		Price:     totalPrice,
 		Code:      code,
 		ExpiredAt: time.Now().Add(time.Hour),
+		UserID:    operator.ID,
 	}
 
 	var payment models.Payment

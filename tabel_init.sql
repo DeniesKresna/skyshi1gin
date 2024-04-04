@@ -108,11 +108,30 @@ CREATE TABLE `payments` (
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE `warehouse_product`
+ALTER TABLE `payments`
   ADD PRIMARY KEY (`id`);
 
-ALTER TABLE `warehouse_product`
+ALTER TABLE `payments`
   MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+-- orders
+
+CREATE TABLE `orders` (
+  `id` bigint NOT NULL,
+  `payment_id` bigint NOT NULL,
+  `product_id` bigint NOT NULL,
+  `amount` bigint DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `orders`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
 --
 -- Indexes for table `roles`
 --
