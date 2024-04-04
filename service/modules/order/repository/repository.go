@@ -34,11 +34,15 @@ type IRepository interface {
 	OrderCreate(ctx *gin.Context, req models.Order) (order models.Order, terr terror.ErrInterface)
 	PaymentGetByCode(ctx *gin.Context, code string) (payment models.Payment, terr terror.ErrInterface)
 	PaymentCreate(ctx *gin.Context, req models.Payment) (payment models.Payment, terr terror.ErrInterface)
+	PaymentLock(ctx *gin.Context, paymentID int64) (payment models.Payment, terr terror.ErrInterface)
+	OrdersGetByPaymentID(ctx *gin.Context, paymentID int64) (order []models.Order, terr terror.ErrInterface)
+	OrderPaymentUpdate(ctx *gin.Context, payment models.Payment) (terr terror.ErrInterface)
 
 	// warehouse cross
 	WarehouseGetByID(ctx *gin.Context, id int64) (warehouse models.Warehouse, terr terror.ErrInterface)
 	WarehouseProductTotal(ctx *gin.Context, productID int64) (total int64, terr terror.ErrInterface)
 	WarehouseProductLock(ctx *gin.Context, req models.WarehouseProduct) (warehouseProduct models.WarehouseProduct, terr terror.ErrInterface)
+	WarehouseCustomerBuy(ctx *gin.Context, req models.Order) (warehouseProducts []models.WarehouseProduct, terr terror.ErrInterface)
 
 	// product cross
 	ProductGetByID(ctx *gin.Context, id int64) (product models.Product, terr terror.ErrInterface)

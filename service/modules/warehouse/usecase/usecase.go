@@ -29,4 +29,5 @@ type IUsecase interface {
 	WarehouseGetAllProductList(ctx *gin.Context) (warehouseProducts []models.AllWarehouseProduct, terr terror.ErrInterface)
 	WarehouseUpdateInactive(ctx *gin.Context, warehouseID int64) (warehouse models.Warehouse, terr terror.ErrInterface)
 	WarehouseUpdateActive(ctx *gin.Context, warehouseID int64) (warehouse models.Warehouse, terr terror.ErrInterface)
+	WarehouseCustomerBuy(ctx *gin.Context, order models.Order) (warehouseProducts []models.WarehouseProduct, terr terror.ErrInterface)
 }

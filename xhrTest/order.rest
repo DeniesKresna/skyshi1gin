@@ -12,7 +12,7 @@ Content-Type: application/json
 ###
 @token = {{login.response.body.responseData.token}}
 
-# @name createProduct
+# @name createOrder
 POST {{host}}/order/purchase HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -20,6 +20,16 @@ Authorization: Bearer {{token}}
 [
     {
         "product_id": 1,
-        "amount": 2
+        "amount": 6
     }
 ]
+
+###
+# @name orderPayment
+POST {{host}}/order/pay HTTP/1.1
+Content-Type: application/json
+Authorization: paymentgatewaytoken
+
+{
+    "code": "fGielipYbWOVdyBKKQof"
+}

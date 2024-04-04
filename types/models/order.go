@@ -35,3 +35,7 @@ type PaymentWithOrder struct {
 	ExpiredAt  time.Time `json:"expired_at" binding:"required"`
 	Orders     []Order   `json:"orders" binding:"required"`
 }
+
+type PayCallbackRequest struct {
+	Code string `json:"code" db:"code" binding:"required"`
+}

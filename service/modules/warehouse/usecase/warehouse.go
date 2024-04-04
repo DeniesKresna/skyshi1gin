@@ -248,3 +248,65 @@ func (u WarehouseUsecase) WarehouseUpdateInactive(ctx *gin.Context, warehouseID 
 	}
 	return
 }
+
+func (u WarehouseUsecase) WarehouseCustomerBuy(ctx *gin.Context, order models.Order) (warehouseProducts []models.WarehouseProduct, terr terror.ErrInterface) {
+	whs, terr := u.warehouseRepo.WarehouseList(ctx)
+	if terr != nil {
+		return
+	}
+
+	var pd models.Product
+	pd, terr = u.warehouseRepo.ProductGetByID(ctx, order.PaymentID)
+	if terr != nil {
+		return
+	}
+
+	var productDeductMap = make(map[int64]int64)
+	remaining := order.Amount
+
+	for _, wh := range whs {
+		var wp models.WarehouseProduct
+		wp, terr = u.warehouseRepo.WarehouseProductLock(ctx, models.WarehouseProduct{ProductID: order.ProductID, WarehouseID: int64(wh.ID)})
+		if terr != nil {
+			return
+		}
+
+		for {
+			if remaining <= 0 {
+				break
+			}
+			if wp.Amount >= remaining {
+				if amt, ok := productDeductMap[int64(wh.ID)]; !ok {
+					productDeductMap[int64(wh.ID)] = remaining
+				} else {
+					productDeductMap[int64(wh.ID)] = remaining + amt
+				}
+				remaining -= remaining
+			} else {
+				if amt, ok := productDeductMap[int64(wh.ID)]; !ok {
+					productDeductMap[int64(wh.ID)] = wp.Amount
+				} else {
+					productDeductMap[int64(wh.ID)] = wp.Amount + amt
+				}
+				remaining -= wp.Amount
+			}
+		}
+	}
+
+	if remaining < 0 {
+		terr = terror.ErrInvalidRule(fmt.Sprintf("Product %s is out of stock in shop", pd.Name))
+		return
+	}
+
+	var wpsrs []models.WarehouseProductStockRequest
+	for k, v := range productDeductMap {
+		wpsr := models.WarehouseProductStockRequest{
+			WarehouseDestinyID: k,
+			ProductID:          int64(pd.ID),
+			Amount:             -1 * v,
+		}
+		wpsrs = append(wpsrs, wpsr)
+	}
+
+	return u.WarehouseProductUpdateStock(ctx, wpsrs)
+}

@@ -26,6 +26,11 @@ func InitRoutes(v1 *gin.RouterGroup, userCase userUsecase.IUsecase, cfg *config.
 
 	moduleRoute := v1.Group("/order")
 
+	paymentGatewayRoute := moduleRoute.Use(middlewares.CheckPaymentGateway())
+	{
+		paymentGatewayRoute.POST("/pay", handler.OrderPayByCode)
+	}
+
 	// adminRoute := moduleRoute.Use(roleCheck(userCase, constants.ROLES_ADMIN))
 	// {
 

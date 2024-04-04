@@ -22,4 +22,5 @@ type IUsecase interface {
 	OrderList(ctx *gin.Context) (order []models.Order, terr terror.ErrInterface)
 	OrderGetByID(ctx *gin.Context, id int64) (order models.Order, terr terror.ErrInterface)
 	OrderItem(ctx *gin.Context, req []models.Item) (paymentOrders models.PaymentWithOrder, terr terror.ErrInterface)
+	OrderPayByCode(ctx *gin.Context, code string) (payment models.PaymentWithOrder, terr terror.ErrInterface)
 }

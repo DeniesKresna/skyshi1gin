@@ -40,6 +40,7 @@ func (u OrderUsecase) OrderItem(ctx *gin.Context, req []models.Item) (paymentOrd
 	)
 
 	// totaling price
+	reqMap := make(map[int64]int64)
 	for _, v := range req {
 		var pd models.Product
 		pd, terr = u.orderRepo.ProductGetByID(ctx, v.ProductID)
@@ -50,6 +51,12 @@ func (u OrderUsecase) OrderItem(ctx *gin.Context, req []models.Item) (paymentOrd
 		products[int64(pd.ID)] = pd
 
 		totalPrice += (v.Amount * pd.Price)
+
+		if rm, ok := reqMap[v.ProductID]; !ok {
+			reqMap[v.ProductID] = v.Amount
+		} else {
+			reqMap[v.ProductID] = rm + v.Amount
+		}
 	}
 
 	// create Payments
@@ -94,28 +101,28 @@ func (u OrderUsecase) OrderItem(ctx *gin.Context, req []models.Item) (paymentOrd
 
 	var orders []models.Order
 	// create order
-	for _, v := range req {
-		_, terr = u.orderRepo.WarehouseProductLock(ctx, models.WarehouseProduct{ProductID: v.ProductID})
+	for k, v := range reqMap {
+		_, terr = u.orderRepo.WarehouseProductLock(ctx, models.WarehouseProduct{ProductID: k})
 		if terr != nil {
 			return
 		}
 
 		var total int64
-		total, terr = u.orderRepo.WarehouseProductTotal(ctx, v.ProductID)
+		total, terr = u.orderRepo.WarehouseProductTotal(ctx, k)
 		if terr != nil {
 			return
 		}
 
-		if total < v.Amount {
-			terr = terror.ErrInvalidRule(fmt.Sprintf("Product %s is out of stock", products[v.ProductID].Name))
+		if total < v {
+			terr = terror.ErrInvalidRule(fmt.Sprintf("Product %s is out of stock", products[k].Name))
 			return
 		}
 
 		var order models.Order
 		order, terr = u.orderRepo.OrderCreate(ctx, models.Order{
 			PaymentID: int64(payment.ID),
-			ProductID: v.ProductID,
-			Amount:    v.Amount,
+			ProductID: k,
+			Amount:    v,
 		})
 		if terr != nil {
 			return
@@ -125,6 +132,83 @@ func (u OrderUsecase) OrderItem(ctx *gin.Context, req []models.Item) (paymentOrd
 	}
 
 	paymentOrders.Orders = orders
+
+	return
+}
+
+func (u OrderUsecase) OrderPayByCode(ctx *gin.Context, code string) (paymentOrder models.PaymentWithOrder, terr terror.ErrInterface) {
+	helper.TxCreate(ctx, u.orderRepo.GetDB)
+	defer func() {
+		if terr != nil {
+			helper.TxRollBack(ctx)
+		} else {
+			helper.TxCommit(ctx)
+		}
+	}()
+
+	var payment models.Payment
+	{
+		payment, terr = u.orderRepo.PaymentGetByCode(ctx, code)
+		if terr != nil {
+			return
+		}
+
+		_, terr = u.orderRepo.PaymentLock(ctx, int64(payment.ID))
+		if terr != nil {
+			return
+		}
+
+		currentTime := time.Now()
+		if currentTime.After(payment.ExpiredAt) {
+			terr = terror.ErrInvalidRule("Payment has been expired")
+			return
+		}
+
+		payment.Channel = "QRIS"
+		payment.PaidOff = 1
+
+		terr = u.orderRepo.OrderPaymentUpdate(ctx, payment)
+		if terr != nil {
+			return
+		}
+	}
+
+	{
+		var orders []models.Order
+		orders, terr = u.orderRepo.OrdersGetByPaymentID(ctx, int64(payment.ID))
+		if terr != nil {
+			return
+		}
+
+		for _, v := range orders {
+			_, terr = u.orderRepo.WarehouseProductLock(ctx, models.WarehouseProduct{ProductID: v.ProductID})
+			if terr != nil {
+				return
+			}
+
+			var total int64
+			total, terr = u.orderRepo.WarehouseProductTotal(ctx, v.ProductID)
+			if terr != nil {
+				return
+			}
+
+			var pd models.Product
+			pd, terr = u.orderRepo.ProductGetByID(ctx, v.ProductID)
+			if terr != nil {
+				return
+			}
+
+			if total < v.Amount {
+				terr = terror.ErrInvalidRule(fmt.Sprintf("Product %s is out of stock", pd.Name))
+				return
+			}
+
+			_, terr = u.orderRepo.WarehouseCustomerBuy(ctx, v)
+			if terr != nil {
+				return
+			}
+		}
+	}
 
 	return
 }

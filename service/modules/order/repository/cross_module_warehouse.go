@@ -17,3 +17,7 @@ func (h OrderRepository) WarehouseProductTotal(ctx *gin.Context, productID int64
 func (h OrderRepository) WarehouseProductLock(ctx *gin.Context, req models.WarehouseProduct) (warehouseProduct models.WarehouseProduct, terr terror.ErrInterface) {
 	return h.warehouseCross.WarehouseProductLock(ctx, req)
 }
+
+func (h OrderRepository) WarehouseCustomerBuy(ctx *gin.Context, req models.Order) (warehouseProducts []models.WarehouseProduct, terr terror.ErrInterface) {
+	return h.warehouseCross.WarehouseCustomerBuy(ctx, req)
+}

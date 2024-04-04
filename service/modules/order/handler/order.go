@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/DeniesKresna/gohelper/utint"
 	"github.com/DeniesKresna/skyshi1gin/service/extensions/terror"
 	"github.com/DeniesKresna/skyshi1gin/types/models"
@@ -49,6 +51,27 @@ func (h OrderHandler) OrderItem(ctx *gin.Context) {
 	}
 
 	order, terr := h.orderUsecase.OrderItem(ctx, req)
+	if terr != nil {
+		ResponseJson(ctx, terr)
+		return
+	}
+	ResponseJson(ctx, order)
+}
+
+func (h OrderHandler) OrderPayByCode(ctx *gin.Context) {
+	var (
+		terr terror.ErrInterface
+		req  models.PayCallbackRequest
+	)
+	fmt.Println("test doang")
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		terr = terror.ErrParameter(err.Error())
+		ResponseJson(ctx, terr)
+		return
+	}
+
+	order, terr := h.orderUsecase.OrderPayByCode(ctx, req.Code)
 	if terr != nil {
 		ResponseJson(ctx, terr)
 		return
