@@ -21,5 +21,5 @@ func OrderCreateUsecase(repo repository.IRepository) IUsecase {
 type IUsecase interface {
 	OrderList(ctx *gin.Context) (order []models.Order, terr terror.ErrInterface)
 	OrderGetByID(ctx *gin.Context, id int64) (order models.Order, terr terror.ErrInterface)
-	OrderItem(ctx *gin.Context, req []models.Item) (order models.Order, terr terror.ErrInterface)
+	OrderItem(ctx *gin.Context, req []models.Item) (paymentOrders models.PaymentWithOrder, terr terror.ErrInterface)
 }

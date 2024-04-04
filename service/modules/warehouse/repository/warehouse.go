@@ -102,7 +102,12 @@ func (r *WarehouseRepository) WarehouseProductLock(ctx *gin.Context, req models.
 }
 
 func (r *WarehouseRepository) WarehouseProductTotal(ctx *gin.Context, productID int64) (total int64, terr terror.ErrInterface) {
-	err := r.db.Table("warehouse_product").Select("sum(amount)").Where("product_id = ?", productID).Scan(total).Error
+	err := r.db.Raw(`
+		select sum(amount) from warehouse_product wp
+		join warehouses w on w.id = wp.warehouse_id
+		where product_id = ? and wp.deleted_at is not null and w.deleted_at is not null
+		and w.active >= 1
+	`, productID).Scan(total).Error
 	if err != nil {
 		terr = terror.New(err)
 	}

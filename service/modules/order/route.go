@@ -24,16 +24,16 @@ func InitRoutes(v1 *gin.RouterGroup, userCase userUsecase.IUsecase, cfg *config.
 
 	moduleRoute := v1.Group("/order")
 
-	adminRoute := moduleRoute.Use(roleCheck(userCase, constants.ROLES_ADMIN))
-	{
+	// adminRoute := moduleRoute.Use(roleCheck(userCase, constants.ROLES_ADMIN))
+	// {
 
-	}
+	// }
 
 	authRoute := moduleRoute.Use(roleCheck(userCase, constants.ROLES_ADMIN, constants.ROLES_USER))
 	{
 		authRoute.GET("/list", handler.OrderList)
 		authRoute.GET("/detail/:id", handler.OrderGetByID)
-		adminRoute.POST("/purchase", handler.OrderItem)
+		authRoute.POST("/purchase", handler.OrderItem)
 	}
 }
 

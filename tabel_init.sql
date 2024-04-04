@@ -97,7 +97,6 @@ ALTER TABLE `warehouse_product`
 
 CREATE TABLE `payments` (
   `id` bigint NOT NULL,
-  `amount` bigint DEFAULT 0,
   `price` bigint,
   `code` varchar(255),
   `paid_off` tinyint NOT NULL DEFAULT 0,
