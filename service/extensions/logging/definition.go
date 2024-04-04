@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/DeniesKresna/bengkelgin/types/constants"
 	"github.com/DeniesKresna/gohelper/utstring"
+	"github.com/DeniesKresna/skyshi1gin/types/constants"
 	"github.com/gin-gonic/gin"
 )
 

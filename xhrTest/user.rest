@@ -1,0 +1,32 @@
+@host = http://localhost:8901/api/v1
+
+# @name login
+POST {{host}}/user/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "identifier": "081357006008",
+    "password": "cobacobadoang"
+}
+
+###
+@token = {{login.response.body.responseData.token}}
+
+# @name createUser
+POST {{host}}/user/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "email": "denieskresna@gmail.com",
+    "password": "cobacobadoang",
+    "phone": "081357006008",
+    "name": "Admin Denies",
+    "role_id": 1
+}
+
+###
+# @name getUser
+GET {{host}}/user/detail/1 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}

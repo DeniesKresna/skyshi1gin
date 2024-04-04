@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"github.com/DeniesKresna/bengkelgin/service/extensions/terror"
-	"github.com/DeniesKresna/bengkelgin/types/models"
 	"github.com/DeniesKresna/gohelper/utint"
+	"github.com/DeniesKresna/skyshi1gin/service/extensions/terror"
+	"github.com/DeniesKresna/skyshi1gin/types/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,13 +15,12 @@ func (h UserHandler) UserGetByID(ctx *gin.Context) {
 
 	id = utint.Convert64FromString(ctx.Param("id"), 0)
 
-	car, terr := h.UserUsecase.UserGetByID(ctx, id)
+	car, terr := h.userUsecase.UserGetByID(ctx, id)
 	if terr != nil {
 		ResponseJson(ctx, terr)
 		return
 	}
 	ResponseJson(ctx, car)
-	return
 }
 
 func (h UserHandler) UserGetByEmail(ctx *gin.Context) {
@@ -36,13 +35,12 @@ func (h UserHandler) UserGetByEmail(ctx *gin.Context) {
 		return
 	}
 
-	user, terr := h.UserUsecase.UserGetByEmail(ctx, emailReq.Email)
+	user, terr := h.userUsecase.UserGetByEmail(ctx, emailReq.Email)
 	if terr != nil {
 		ResponseJson(ctx, terr)
 		return
 	}
 	ResponseJson(ctx, user)
-	return
 }
 
 func (h UserHandler) UserCreate(ctx *gin.Context) {
@@ -57,13 +55,12 @@ func (h UserHandler) UserCreate(ctx *gin.Context) {
 		return
 	}
 
-	user, terr = h.UserUsecase.UserCreate(ctx, user)
+	user, terr = h.userUsecase.UserCreate(ctx, user)
 	if terr != nil {
 		ResponseJson(ctx, terr)
 		return
 	}
 	ResponseJson(ctx, user)
-	return
 }
 
 func (h UserHandler) UserSearch(ctx *gin.Context) {
@@ -78,13 +75,12 @@ func (h UserHandler) UserSearch(ctx *gin.Context) {
 		return
 	}
 
-	res, terr := h.UserUsecase.UserSearch(ctx, search)
+	res, terr := h.userUsecase.UserSearch(ctx, search)
 	if terr != nil {
 		ResponseJson(ctx, terr)
 		return
 	}
 	ResponseJson(ctx, res)
-	return
 }
 
 func (h UserHandler) UserUpdate(ctx *gin.Context) {
@@ -99,16 +95,15 @@ func (h UserHandler) UserUpdate(ctx *gin.Context) {
 		return
 	}
 
-	user, terr = h.UserUsecase.UserUpdate(ctx, user)
+	user, terr = h.userUsecase.UserUpdate(ctx, user)
 	if terr != nil {
 		ResponseJson(ctx, terr)
 		return
 	}
 	ResponseJson(ctx, user)
-	return
 }
 
-func (h UserHandler) UserGetAllEmployee(ctx *gin.Context) {
+func (h UserHandler) UserGetAllUser(ctx *gin.Context) {
 	var (
 		user models.UserRole
 		terr terror.ErrInterface
@@ -120,11 +115,10 @@ func (h UserHandler) UserGetAllEmployee(ctx *gin.Context) {
 		return
 	}
 
-	res, terr := h.UserUsecase.UserGetAllEmployee(ctx, user.Name)
+	res, terr := h.userUsecase.UserGetAllUser(ctx, user.Name)
 	if terr != nil {
 		ResponseJson(ctx, terr)
 		return
 	}
 	ResponseJson(ctx, res)
-	return
 }

@@ -1,0 +1,60 @@
+@host = http://localhost:8901/api/v1
+
+# @name login
+POST {{host}}/user/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "identifier": "081357006008",
+    "password": "cobacobadoang"
+}
+
+###
+@token = {{login.response.body.responseData.token}}
+
+# @name createWarehouse
+POST {{host}}/warehouse/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Warehouse B"
+}
+
+###
+# @name listWarehouse
+GET {{host}}/warehouse/list HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+###
+# @name warehouseUpdateStock
+POST {{host}}/warehouse/product/update-stock HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+[
+    {
+        "warehouse_destiny_id": 1,
+        "product_id": 1,
+        "amount": 2
+    },
+    {
+        "warehouse_destiny_id": 1,
+        "product_id": 2,
+        "amount": -9
+    }
+]
+
+###
+# @name warehouseUpdateStock
+POST {{host}}/warehouse/product/transfer-stock HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "warehouse_sender_id": 1,
+    "warehouse_destiny_id": 2,
+    "product_id": 1,
+    "amount": 3
+}

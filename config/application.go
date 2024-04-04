@@ -1,9 +1,9 @@
 package config
 
 import (
-	"github.com/DeniesKresna/bengkelgin/types/constants"
 	"github.com/DeniesKresna/gohelper/utint"
 	"github.com/DeniesKresna/gohelper/utstring"
+	"github.com/DeniesKresna/skyshi1gin/types/constants"
 )
 
 type App struct {

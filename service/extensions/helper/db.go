@@ -3,6 +3,10 @@ package helper
 import (
 	"errors"
 	"reflect"
+
+	"github.com/DeniesKresna/skyshi1gin/types/constants"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func WrapPercentOnStructString(data interface{}) (err error) {
@@ -29,4 +33,56 @@ func WrapPercentOnStructString(data interface{}) (err error) {
 	}
 
 	return
+}
+
+type TransactionSetFunc = func(ctx *gin.Context) interface{}
+
+func TxCreate(ctx *gin.Context, fn TransactionSetFunc) {
+	if TxGet(ctx) == nil {
+		txCtx := fn(ctx)
+		var ok bool
+		var tx *gorm.DB
+		tx, ok = txCtx.(*gorm.DB)
+		if !ok {
+			return
+		}
+		ctx.Set(constants.TX_CTX_KEY, tx.Begin())
+	}
+}
+
+func TxGet(ctx *gin.Context) (tx *gorm.DB) {
+	txCtx, exist := ctx.Get(constants.TX_CTX_KEY)
+	if !exist {
+		return
+	}
+	var ok bool
+	tx, ok = txCtx.(*gorm.DB)
+	if !ok {
+		return nil
+	}
+	return
+}
+
+func TxCommit(ctx *gin.Context) {
+	txCtx, exist := ctx.Get(constants.TX_CTX_KEY)
+	if !exist {
+		return
+	}
+	tx, ok := txCtx.(*gorm.DB)
+	if !ok {
+		return
+	}
+	tx.Commit()
+}
+
+func TxRollBack(ctx *gin.Context) {
+	txCtx, exist := ctx.Get(constants.TX_CTX_KEY)
+	if !exist {
+		return
+	}
+	tx, ok := txCtx.(*gorm.DB)
+	if !ok {
+		return
+	}
+	tx.Rollback()
 }

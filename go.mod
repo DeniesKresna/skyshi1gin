@@ -1,4 +1,4 @@
-module github.com/DeniesKresna/bengkelgin
+module github.com/DeniesKresna/skyshi1gin
 
 go 1.20
 

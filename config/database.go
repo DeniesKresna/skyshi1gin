@@ -3,8 +3,8 @@ package config
 import (
 	"fmt"
 
-	"github.com/DeniesKresna/bengkelgin/types/constants"
 	"github.com/DeniesKresna/gohelper/utstring"
+	"github.com/DeniesKresna/skyshi1gin/types/constants"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

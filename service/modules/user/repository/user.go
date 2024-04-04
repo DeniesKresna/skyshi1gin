@@ -1,9 +1,11 @@
 package repository
 
 import (
-	"github.com/DeniesKresna/bengkelgin/service/extensions/terror"
-	"github.com/DeniesKresna/bengkelgin/types/constants"
-	"github.com/DeniesKresna/bengkelgin/types/models"
+	"errors"
+
+	"github.com/DeniesKresna/skyshi1gin/service/extensions/terror"
+	"github.com/DeniesKresna/skyshi1gin/types/constants"
+	"github.com/DeniesKresna/skyshi1gin/types/models"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -11,7 +13,19 @@ import (
 func (r UserRepository) UserGetByEmail(ctx *gin.Context, email string) (user models.User, terr terror.ErrInterface) {
 	err := r.db.First(&user, "email = ?", email).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(gorm.ErrRecordNotFound, err) {
+			terr = terror.ErrNotFoundData(err.Error())
+			return
+		}
+		terr = terror.New(err)
+	}
+	return
+}
+
+func (r UserRepository) UserGetByPhone(ctx *gin.Context, phone string) (user models.User, terr terror.ErrInterface) {
+	err := r.db.First(&user, "phone = ?", phone).Error
+	if err != nil {
+		if errors.Is(gorm.ErrRecordNotFound, err) {
 			terr = terror.ErrNotFoundData(err.Error())
 			return
 		}
@@ -23,7 +37,7 @@ func (r UserRepository) UserGetByEmail(ctx *gin.Context, email string) (user mod
 func (r UserRepository) UserGetByID(ctx *gin.Context, id int64) (user models.User, terr terror.ErrInterface) {
 	err := r.db.First(&user, "id = ?", id).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(gorm.ErrRecordNotFound, err) {
 			terr = terror.ErrNotFoundData(err.Error())
 			return
 		}
@@ -79,7 +93,7 @@ func (r UserRepository) UserSearch(ctx *gin.Context, user models.User, searchPay
 func (r UserRepository) UserUpdate(ctx *gin.Context, user *models.User) (terr terror.ErrInterface) {
 	err := r.db.Save(user).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(gorm.ErrRecordNotFound, err) {
 			terr = terror.ErrNotFoundData(err.Error())
 			return
 		}

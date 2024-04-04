@@ -4,15 +4,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/DeniesKresna/bengkelgin/service/extensions/terror"
-	"github.com/DeniesKresna/bengkelgin/service/modules/user/usecase"
-	"github.com/DeniesKresna/bengkelgin/types/constants"
 	"github.com/DeniesKresna/gohelper/utstring"
+	"github.com/DeniesKresna/skyshi1gin/service/extensions/terror"
+	"github.com/DeniesKresna/skyshi1gin/service/modules/user/usecase"
+	"github.com/DeniesKresna/skyshi1gin/types/constants"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
-func CheckRole(userCase usecase.UserUsecase, roles []string) gin.HandlerFunc {
+func CheckRole[T string | constants.Roles](userCase usecase.IUsecase, roles []T) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var terr terror.ErrInterface
 		// Get the authorization header from the request
@@ -84,11 +84,11 @@ func CheckRole(userCase usecase.UserUsecase, roles []string) gin.HandlerFunc {
 
 		isAllowed := false
 		for _, role := range roles {
-			if role == "" {
+			if string(role) == "" {
 				isAllowed = true
 				break
 			}
-			if role == userRole.RoleName {
+			if string(role) == userRole.RoleName {
 				isAllowed = true
 			}
 		}

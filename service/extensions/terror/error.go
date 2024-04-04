@@ -6,8 +6,8 @@ import (
 	nativeRuntime "runtime"
 	"strings"
 
-	"github.com/DeniesKresna/bengkelgin/types/constants"
 	"github.com/DeniesKresna/gohelper/utstring"
+	"github.com/DeniesKresna/skyshi1gin/types/constants"
 )
 
 type (

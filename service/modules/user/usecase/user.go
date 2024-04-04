@@ -1,16 +1,20 @@
 package usecase
 
 import (
-	"github.com/DeniesKresna/bengkelgin/service/extensions/helper"
-	"github.com/DeniesKresna/bengkelgin/service/extensions/terror"
-	"github.com/DeniesKresna/bengkelgin/types/constants"
-	"github.com/DeniesKresna/bengkelgin/types/models"
+	"github.com/DeniesKresna/skyshi1gin/service/extensions/helper"
+	"github.com/DeniesKresna/skyshi1gin/service/extensions/terror"
+	"github.com/DeniesKresna/skyshi1gin/types/constants"
+	"github.com/DeniesKresna/skyshi1gin/types/models"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func (u UserUsecase) UserGetByEmail(ctx *gin.Context, email string) (user models.User, terr terror.ErrInterface) {
 	return u.userRepo.UserGetByEmail(ctx, email)
+}
+
+func (u UserUsecase) UserGetByPhone(ctx *gin.Context, phone string) (user models.User, terr terror.ErrInterface) {
+	return u.userRepo.UserGetByPhone(ctx, phone)
 }
 
 func (u UserUsecase) UserGetByID(ctx *gin.Context, id int64) (user models.User, terr terror.ErrInterface) {
@@ -116,7 +120,7 @@ func (u UserUsecase) UserSearch(ctx *gin.Context, filter models.DbSearchObject) 
 	return
 }
 
-func (u UserUsecase) UserGetAllEmployee(ctx *gin.Context, name string) (users []models.User, terr terror.ErrInterface) {
+func (u UserUsecase) UserGetAllUser(ctx *gin.Context, name string) (users []models.User, terr terror.ErrInterface) {
 	name = helper.WrapString(name, "%")
-	return u.userRepo.UserGetByRoleAndFilterName(ctx, []string{string(constants.ROLES_ADMIN), string(constants.ROLES_EMP)}, name)
+	return u.userRepo.UserGetByRoleAndFilterName(ctx, []string{string(constants.ROLES_ADMIN), string(constants.ROLES_USER)}, name)
 }

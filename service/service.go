@@ -1,36 +1,24 @@
 package service
 
 import (
-	"github.com/DeniesKresna/bengkelgin/config"
-	"github.com/DeniesKresna/bengkelgin/service/middlewares"
-	benghandler "github.com/DeniesKresna/bengkelgin/service/modules/bengkel/handler"
-	bengrepo "github.com/DeniesKresna/bengkelgin/service/modules/bengkel/repository"
-	bengcase "github.com/DeniesKresna/bengkelgin/service/modules/bengkel/usecase"
-	userhandler "github.com/DeniesKresna/bengkelgin/service/modules/user/handler"
-	userrepo "github.com/DeniesKresna/bengkelgin/service/modules/user/repository"
-	"github.com/DeniesKresna/bengkelgin/service/modules/user/usecase"
-	usercase "github.com/DeniesKresna/bengkelgin/service/modules/user/usecase"
+	"github.com/DeniesKresna/skyshi1gin/config"
+	"github.com/DeniesKresna/skyshi1gin/service/middlewares"
+
+	userModule "github.com/DeniesKresna/skyshi1gin/service/modules/user"
+	userrepo "github.com/DeniesKresna/skyshi1gin/service/modules/user/repository"
+	usercase "github.com/DeniesKresna/skyshi1gin/service/modules/user/usecase"
+
+	productModule "github.com/DeniesKresna/skyshi1gin/service/modules/product"
+	warehouseModule "github.com/DeniesKresna/skyshi1gin/service/modules/warehouse"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func setRoutes(cfg *config.Config) (r *gin.Engine, err error) {
-	const (
-		USER     = "user"
-		EMPLOYEE = "employee"
-		ADMIN    = "administrator"
-	)
 	r = gin.New()
 
-	// user modules definition
 	userRepo := userrepo.UserCreateRepository(cfg.DB)
 	userCase := usercase.UserCreateUsecase(userRepo)
-	userHandler := userhandler.UserCreateHandler(userCase)
-
-	// bengkel modules definitions
-	bengkelRepo := bengrepo.BengkelCreateRepository(cfg.DB)
-	bengkelCase := bengcase.BengkelCreateUsecase(bengkelRepo, userCase)
-	bengkelHandler := benghandler.BengkelCreateHandler(bengkelCase)
 
 	r.Use(corsConfig())
 	r.Use(middlewares.ActivityLogger())
@@ -46,42 +34,9 @@ func setRoutes(cfg *config.Config) (r *gin.Engine, err error) {
 	api := r.Group("/api")
 	v1 := api.Group("/v1")
 	{
-		v1.POST("/auth/login", userHandler.AuthLogin)
-
-		// admin
-		adminRoute := v1.Use(roleCheck(userCase, ADMIN))
-		{
-			adminRoute.POST("/user", userHandler.UserCreate)
-			adminRoute.PUT("/user", userHandler.UserUpdate)
-			adminRoute.GET("/user/:id", userHandler.UserGetByID)
-			adminRoute.POST("/user/search", userHandler.UserSearch)
-		}
-
-		adminNemployeeRoute := v1.Use(roleCheck(userCase, ADMIN, EMPLOYEE))
-		// admin & employee
-		{
-			adminNemployeeRoute.POST("/user/byemail", userHandler.UserGetByEmail)
-			adminNemployeeRoute.POST("/user/employee-list", userHandler.UserGetAllEmployee)
-
-			adminNemployeeRoute.GET("/car/:id", bengkelHandler.CarGetByID)
-			adminNemployeeRoute.POST("/car/search", bengkelHandler.CarSearch)
-			adminNemployeeRoute.POST("/car/plat-list", bengkelHandler.CarListGetByPlat)
-			adminNemployeeRoute.POST("/car", bengkelHandler.CarCreate)
-			adminNemployeeRoute.PUT("/car", bengkelHandler.CarUpdate)
-
-			adminNemployeeRoute.GET("/customer/:id", bengkelHandler.CustomerGetByID)
-			adminNemployeeRoute.POST("/customer/search", bengkelHandler.CustomerSearch)
-			adminNemployeeRoute.POST("/customer/byphone", bengkelHandler.CustomerGetByPhone)
-			adminNemployeeRoute.POST("/customer/name-list", bengkelHandler.CustomerListGetByName)
-			adminNemployeeRoute.POST("/customer", bengkelHandler.CustomerCreate)
-			adminNemployeeRoute.PUT("/customer", bengkelHandler.CustomerUpdate)
-
-			adminNemployeeRoute.GET("/execution/:id", bengkelHandler.ExecutionGetByID)
-			adminNemployeeRoute.POST("/execution/search", bengkelHandler.ExecutionSearch)
-			adminNemployeeRoute.POST("/execution", bengkelHandler.ExecutionCreate)
-			adminNemployeeRoute.PUT("/execution", bengkelHandler.ExecutionUpdate)
-			adminNemployeeRoute.POST("/execution/download", bengkelHandler.ExecutionDownload)
-		}
+		userModule.InitRoutes(v1, userCase, cfg)
+		productModule.InitRoutes(v1, userCase, cfg)
+		warehouseModule.InitRoutes(v1, userCase, cfg)
 	}
 
 	return
@@ -95,10 +50,6 @@ func corsConfig() gin.HandlerFunc {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	})
-}
-
-func roleCheck(userCase usecase.UserUsecase, roles ...string) gin.HandlerFunc {
-	return middlewares.CheckRole(userCase, roles)
 }
 
 func Start(cfg *config.Config) (err error) {

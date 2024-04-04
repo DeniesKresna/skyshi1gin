@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/DeniesKresna/bengkelgin/service/extensions/terror"
-	"github.com/DeniesKresna/bengkelgin/types/models"
+	"github.com/DeniesKresna/skyshi1gin/service/extensions/terror"
+	"github.com/DeniesKresna/skyshi1gin/types/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,11 +18,10 @@ func (h UserHandler) AuthLogin(ctx *gin.Context) {
 		return
 	}
 
-	authResp, terr := h.UserUsecase.AuthLogin(ctx, loginReq.Email, loginReq.Password)
+	authResp, terr := h.userUsecase.AuthLogin(ctx, loginReq.Identifier, loginReq.Password)
 	if terr != nil {
 		ResponseJson(ctx, terr)
 		return
 	}
 	ResponseJson(ctx, authResp)
-	return
 }

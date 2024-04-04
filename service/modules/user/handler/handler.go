@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/DeniesKresna/bengkelgin/service/extensions/helper"
-	"github.com/DeniesKresna/bengkelgin/service/extensions/terror"
-	"github.com/DeniesKresna/bengkelgin/service/modules/user/usecase"
-	"github.com/DeniesKresna/bengkelgin/types/constants"
-	"github.com/DeniesKresna/bengkelgin/types/models"
 	"github.com/DeniesKresna/gohelper/utstring"
+	"github.com/DeniesKresna/skyshi1gin/service/extensions/helper"
+	"github.com/DeniesKresna/skyshi1gin/service/extensions/terror"
+	"github.com/DeniesKresna/skyshi1gin/service/modules/user/usecase"
+	"github.com/DeniesKresna/skyshi1gin/types/constants"
+	"github.com/DeniesKresna/skyshi1gin/types/models"
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
-	UserUsecase usecase.UserUsecase
+	userUsecase usecase.IUsecase
 }
 
-func UserCreateHandler(userUsecase usecase.UserUsecase) UserHandler {
+func UserCreateHandler(userUsecase usecase.IUsecase) UserHandler {
 	return UserHandler{
-		UserUsecase: userUsecase,
+		userUsecase: userUsecase,
 	}
 }
 
@@ -53,5 +53,4 @@ func ResponseJson(ctx *gin.Context, data interface{}) {
 	}
 
 	ctx.JSON(httpStatusCode, responseData)
-	return
 }

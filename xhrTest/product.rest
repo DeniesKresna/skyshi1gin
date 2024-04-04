@@ -1,0 +1,30 @@
+@host = http://localhost:8901/api/v1
+
+# @name login
+POST {{host}}/user/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "identifier": "denieskresna@gmail.com",
+    "password": "cobacobadoang"
+}
+
+###
+@token = {{login.response.body.responseData.token}}
+
+# @name createProduct
+POST {{host}}/product/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Sabun Lux",
+    "code": "soap-lux",
+    "price": 5000
+}
+
+###
+# @name listProduct
+GET {{host}}/product/list HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}

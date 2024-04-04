@@ -2,6 +2,7 @@ package models
 
 type User struct {
 	DbStandard
+	Phone    string `gorm:"<-:create" json:"phone" binding:"required"`
 	Email    string `gorm:"<-:create" json:"email" binding:"required"`
 	Name     string `json:"name" binding:"required"`
 	Password string `json:"password" binding:"required"`
@@ -20,8 +21,20 @@ type EmailRequest struct {
 type UserRole struct {
 	ID       int64  `json:"id"`
 	Email    string `json:"email"`
+	Phone    string `json:"phone"`
 	Name     string `json:"name"`
 	Password string `json:"password"`
 	RoleID   int64  `json:"role_id"`
 	RoleName string `json:"role_name"`
+}
+
+type UserProduct struct {
+	DbStandard
+	UserID    int64 `json:"warehouse_id"`
+	ProductID int64 `json:"product_id"`
+	Amount    int64 `json:"amount"`
+}
+
+func (wp *UserProduct) TableName() string {
+	return "user_product"
 }

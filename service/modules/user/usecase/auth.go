@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/DeniesKresna/bengkelgin/service/extensions/terror"
-	"github.com/DeniesKresna/bengkelgin/types/constants"
-	"github.com/DeniesKresna/bengkelgin/types/models"
 	"github.com/DeniesKresna/gohelper/utstring"
 	"github.com/DeniesKresna/gohelper/utstruct"
+	"github.com/DeniesKresna/skyshi1gin/service/extensions/terror"
+	"github.com/DeniesKresna/skyshi1gin/types/constants"
+	"github.com/DeniesKresna/skyshi1gin/types/models"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -46,11 +46,29 @@ func (u UserUsecase) AuthGetFromContext(ctx *gin.Context) (res models.UserRole, 
 	return
 }
 
-func (u UserUsecase) AuthLogin(ctx *gin.Context, email string, password string) (authResp models.AuthResponse, terr terror.ErrInterface) {
-	user, errx := u.UserGetByEmail(ctx, email)
+func (u UserUsecase) AuthLogin(ctx *gin.Context, username string, password string) (authResp models.AuthResponse, terr terror.ErrInterface) {
+	var (
+		errx terror.ErrInterface
+		user models.User
+	)
+
+	user, errx = u.UserGetByEmail(ctx, username)
 	if errx != nil {
-		terr = terror.ErrInvalidRule("User with the email was not found")
-		return
+		if errx.GetType() == terror.ERROR_TYPE_DATA_NOT_FOUND {
+			user, errx = u.UserGetByPhone(ctx, username)
+			if errx != nil {
+				if errx.GetType() == terror.ERROR_TYPE_DATA_NOT_FOUND {
+					terr = terror.ErrInvalidRule("User with the email / phone was not found")
+					return
+				} else {
+					terr = errx
+					return
+				}
+			}
+		} else {
+			terr = errx
+			return
+		}
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
