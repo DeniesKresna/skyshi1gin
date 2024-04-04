@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-api-staging-deployment
+  labels:
+    app: app-api-staging
+    env: staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-api-staging
+  template:
+    metadata:
+      labels:
+        app: app-api-staging
+        env: staging
+    spec:
+      containers:
+      - name: app-api-staging
+        image: xxx1380xxxxx.dkr.ecr.ap-southeast-1.amazonaws.com/skyshi1gin:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8901
+          protocol: TCP
